@@ -14,10 +14,10 @@
  */
 
 function initializeMap(xSize, ySize, numObstacles, ...rovers) {
-  const map = generateEmptyMap(xSize, ySize);
-  if (map) {
-    if (landscapeSetup(map, numObstacles, rovers)) {
-      return map;
+  const marsMap = generateEmptyMap(xSize, ySize);
+  if (marsMap) {
+    if (landscapeSetup(marsMap, numObstacles, rovers)) {
+      return marsMap;
     } else {
       console.log("The map hasn't enough space to place all the elements");
       return false;
@@ -45,14 +45,14 @@ function generateEmptyMap(xSize, ySize) {
       squares: [],
       boundaries: {
         left: -1,
-        right: ySize,
+        right: xSize,
         top: -1,
-        down: xSize
+        down: ySize
       }
     };
-    for (let i = 0; i < xSize; i++) {
+    for (let i = 0; i < ySize; i++) {
       map.squares[i] = [];
-      for (let j = 0; j < ySize; j++) {
+      for (let j = 0; j < xSize; j++) {
         map.squares[i][j] = 0;
       }
     }
@@ -78,16 +78,16 @@ function landscapeSetup(map, numObst, rovers) {
   if (deploys <= map.boundaries.down * map.boundaries.right) {
     while (deploys > 0) {
       let pair = {
-        x: Math.floor(Math.random() * map.boundaries.down),
-        y: Math.floor(Math.random() * map.boundaries.right)
+        x: Math.floor(Math.random() * map.boundaries.right),
+        y: Math.floor(Math.random() * map.boundaries.down)
       }; //rnd coord pair
-      if (map.squares[pair.x][pair.y] === 0) {
+      if (map.squares[pair.y][pair.x] === 0) {
         if (numObst > 0) {
-          map.squares[pair.x][pair.y] = "#"; // Place # as a big rock
+          map.squares[pair.y][pair.x] = "#"; // Place # as a big rock
           numObst--;
         } else {
           let rover = rovers.pop();
-          map.squares[pair.x][pair.y] = rover; //Place rover and initialize this rover's positions
+          map.squares[pair.y][pair.x] = rover; //Place rover and initialize this rover's positions
           rover.currentCoords = {
             x: pair.x,
             y: pair.y
@@ -128,7 +128,7 @@ function haveObstacle(map, destination) {
     destination.x >= map.boundaries.right
   ) {
     return "destination out of bounds";
-  } else if (map.squares[destination.x][destination.y] !== 0) {
+  } else if (map.squares[destination.y][destination.x] !== 0) {
     return "collision warning";
   }
   return false;
@@ -252,11 +252,11 @@ function moveBackwards(rover, map) {
 function repositionRover(map, rover, destination) {
   let blockedWay = haveObstacle(map, destination);
   if (!blockedWay) {
-    map.squares[rover.currentCoords.x][rover.currentCoords.y] = 0;
+    map.squares[rover.currentCoords.y][rover.currentCoords.x] = 0;
     rover.currentCoords.x = destination.x;
     rover.currentCoords.y = destination.y;
-    map.squares[rover.currentCoords.x][rover.currentCoords.y] = rover;
-    rover.travelLog.push(rover.currentCoords);
+    map.squares[rover.currentCoords.y][rover.currentCoords.x] = rover;
+    rover.travelLog.push({x: rover.currentCoords.x, y: rover.currentCoords.y});//pass propertir value NO object reference
   } else {
     issueWarning(rover, blockedWay);
   }
@@ -395,9 +395,9 @@ function issueWarning(rover, message) {
  */
 
 function paintMap(map) {
-  for (let i = 0; i < map.squares.length; i++) {
+  for (let x = 0; x < map.squares.length; x++) {
     console.log(
-      map.squares[i].map(x => (x == 0 ? "0" : x === "#" ? "#" : x.name[0]))
+      map.squares[x].map(elem => (elem == 0 ? "0" : elem === "#" ? "#" : elem.name[0]))
     );
   }
 }
@@ -424,15 +424,16 @@ const marsRoverGamma = {
 const roverOrders = [
   {
     rover: marsRoverAlpha,
-    commands: "lf"
-  },
+    commands: "frffflbbbrf"
+  }
+  ,
   {
     rover: marsRoverBeta,
-    commands: ""
+    commands: "rrfffrbbbrfff"
   },
   {
     rover: marsRoverGamma,
-    commands: ""
+    commands: "bbblrrfff"
   }
 ];
 
