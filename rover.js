@@ -31,7 +31,7 @@ function generateMap(xSize, ySize) {
 
 /**
  *Given a map of Mars deploy numObst obstacles and n rovers with random
- *positions
+ *positions. If there is more obstacles + rovers than map squares issues error message
  *
  * @param {object} map
  * @param {number} numObst
@@ -40,33 +40,36 @@ function generateMap(xSize, ySize) {
 
 function landscapeSetup(map, numObst, ...rovers) {
   let deploys = numObst + rovers.length;
-
-  while (deploys > 0) {
-    let pair = {
-      x: Math.floor(Math.random() * map.boundaries.down),
-      y: Math.floor(Math.random() * map.boundaries.right)
-    }; //rnd coord pair
-    if (map.squares[pair.x][pair.y] === 0) {
-      if (numObst > 0) {
-        map.squares[pair.x][pair.y] = "#"; // Place # as a big rock
-        numObst--;
-      } else {
-        let rover = rovers.pop();
-        map.squares[pair.x][pair.y] = rover; //Place rover and initialize this rover's positions
-        rover.currentCoords = {
-          x: pair.x,
-          y: pair.y
-        };
-        rover.travelLog = [
-          {
+  if (deploys <= (map.boundaries.down * map.boundaries.right)) {
+    while (deploys > 0) {
+      let pair = {
+        x: Math.floor(Math.random() * map.boundaries.down),
+        y: Math.floor(Math.random() * map.boundaries.right)
+      }; //rnd coord pair
+      if (map.squares[pair.x][pair.y] === 0) {
+        if (numObst > 0) {
+          map.squares[pair.x][pair.y] = "#"; // Place # as a big rock
+          numObst--;
+        } else {
+          let rover = rovers.pop();
+          map.squares[pair.x][pair.y] = rover; //Place rover and initialize this rover's positions
+          rover.currentCoords = {
             x: pair.x,
             y: pair.y
-          }
-        ];
+          };
+          rover.travelLog = [
+            {
+              x: pair.x,
+              y: pair.y
+            }
+          ];
+        }
+        deploys--;
       }
-      deploys--;
     }
-  }
+  } else {
+    console.log("The map hasn't enought space for all this elements");
+  };
 }
 
 //---------- Rover Movement --------------
