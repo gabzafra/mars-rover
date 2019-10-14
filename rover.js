@@ -4,17 +4,17 @@
  *Initialize the Mars map with the provided x and y sizes, the number of desired obstacles and the rover objects.
  *Checks if the size of the map is valid, and if there is enough space to place all the rovers and obstacles, issuing
  *error messages if not.
- *Returns a map object with all the elements set or false if there was an error
+ *Returns a map object with all the elements set, or false if there was an error
  *
- * @param {number} mapX
- * @param {number} mapY
+ * @param {number} xSize
+ * @param {number} ySize
  * @param {number} numObstacles
  * @param {rover object} rovers
  * @returns object boolean
  */
 
-function initializeMap(mapX, mapY, numObstacles, ...rovers) {
-  const map = generateMap(mapX, mapY);
+function initializeMap(xSize, ySize, numObstacles, ...rovers) {
+  const map = generateEmptyMap(xSize, ySize);
   if (map) {
     if (landscapeSetup(map, numObstacles, rovers)) {
       return map;
@@ -29,16 +29,17 @@ function initializeMap(mapX, mapY, numObstacles, ...rovers) {
 }
 
 /**
- * Creates a new Mars map given the x and y size of the matrix. Returns
+ * Creates a new empty Mars map given the x and y size of the matrix. Returns
  * an object with a squares property which contains the map matrix filled
  * with "empty" strings, and a boundaries property containing an object with the map limits.
+ * Returns false if no positive integer arguments were found
  *
  * @param {number} xSize
  * @param {number} ySize
- * @returns map object
+ * @returns object boolean
  */
 
-function generateMap(xSize, ySize) {
+function generateEmptyMap(xSize, ySize) {
   if (xSize > 0 && ySize > 0) {
     let map = {
       squares: [],
@@ -63,11 +64,13 @@ function generateMap(xSize, ySize) {
 
 /**
  *Given a map of Mars deploy numObst obstacles and n rovers with random
- *positions. If there is more obstacles + rovers than map squares issues error message
+ *positions. If there is more obstacles + rovers than map squares returns false,
+ *else returns true.
  *
  * @param {object} map
  * @param {number} numObst
  * @param {object} rovers
+ * @returns boolean
  */
 
 function landscapeSetup(map, numObst, rovers) {
