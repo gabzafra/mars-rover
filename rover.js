@@ -1,6 +1,34 @@
 //---------- Map Creation --------------
 
 /**
+ *Initialize the Mars map with the provided x and y sizes, the number of desired obstacles and the rover objects.
+ *Checks if the size of the map is valid, and if there is enough space to place all the rovers and obstacles, issuing
+ *error messages if not.
+ *Returns a map object with all the elements set or false if there was an error
+ *
+ * @param {number} mapX
+ * @param {number} mapY
+ * @param {number} numObstacles
+ * @param {rover object} rovers
+ * @returns object boolean
+ */
+
+function initializeMap(mapX, mapY, numObstacles, ...rovers) {
+  const map = generateMap(mapX, mapY);
+  if (map) {
+    if (landscapeSetup(map, numObstacles, rovers)) {
+      return map;
+    } else {
+      console.log("The map hasn't enough space to place all the elements");
+      return false;
+    }
+  } else {
+    console.log("Map size must be greater than 0");
+    return false;
+  }
+}
+
+/**
  * Creates a new Mars map given the x and y size of the matrix. Returns
  * an object with a squares property which contains the map matrix filled
  * with "empty" strings, and a boundaries property containing an object with the map limits.
@@ -11,22 +39,26 @@
  */
 
 function generateMap(xSize, ySize) {
-  let map = {
-    squares: [],
-    boundaries: {
-      left: -1,
-      right: ySize,
-      top: -1,
-      down: xSize
+  if (xSize > 0 && ySize > 0) {
+    let map = {
+      squares: [],
+      boundaries: {
+        left: -1,
+        right: ySize,
+        top: -1,
+        down: xSize
+      }
+    };
+    for (let i = 0; i < xSize; i++) {
+      map.squares[i] = [];
+      for (let j = 0; j < ySize; j++) {
+        map.squares[i][j] = 0;
+      }
     }
-  };
-  for (let i = 0; i < xSize; i++) {
-    map.squares[i] = [];
-    for (let j = 0; j < ySize; j++) {
-      map.squares[i][j] = 0;
-    }
+    return map;
+  } else {
+    return false;
   }
-  return map;
 }
 
 /**
@@ -38,9 +70,9 @@ function generateMap(xSize, ySize) {
  * @param {object} rovers
  */
 
-function landscapeSetup(map, numObst, ...rovers) {
+function landscapeSetup(map, numObst, rovers) {
   let deploys = numObst + rovers.length;
-  if (deploys <= (map.boundaries.down * map.boundaries.right)) {
+  if (deploys <= map.boundaries.down * map.boundaries.right) {
     while (deploys > 0) {
       let pair = {
         x: Math.floor(Math.random() * map.boundaries.down),
@@ -67,9 +99,10 @@ function landscapeSetup(map, numObst, ...rovers) {
         deploys--;
       }
     }
+    return true;
   } else {
-    console.log("The map hasn't enought space for all this elements");
-  };
+    return false;
+  }
 }
 
 //---------- Rover Movement --------------
@@ -400,14 +433,21 @@ const roverOrders = [
   }
 ];
 
-//---------- Map Setup And Population --------------
+//------------ Map Setup ---------------
 
-const marsMap = generateMap(10, 10);
-
-landscapeSetup(marsMap, 6, marsRoverAlpha, marsRoverBeta, marsRoverGamma);
+const marsMap = initializeMap(
+  10,
+  10,
+  6,
+  marsRoverAlpha,
+  marsRoverBeta,
+  marsRoverGamma
+);
 
 //---------- Main --------------
 
-paintMap(marsMap);
-commandRovers(marsMap, roverOrders);
-paintMap(marsMap);
+if (marsMap) {
+  paintMap(marsMap);
+  commandRovers(marsMap, roverOrders);
+  paintMap(marsMap);
+}
