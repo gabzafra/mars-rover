@@ -122,10 +122,10 @@ function landscapeSetup(map, numObst, rovers) {
 
 function haveObstacle(map, destination) {
   if (
-    destination.x <= map.boundaries.top ||
-    destination.x >= map.boundaries.down ||
-    destination.y <= map.boundaries.left ||
-    destination.y >= map.boundaries.right
+    destination.y <= map.boundaries.top ||
+    destination.y >= map.boundaries.down ||
+    destination.x <= map.boundaries.left ||
+    destination.x >= map.boundaries.right
   ) {
     return "destination out of bounds";
   } else if (map.squares[destination.x][destination.y] !== 0) {
@@ -195,16 +195,16 @@ function moveForward(rover, map) {
   };
   switch (rover.direction) {
     case "N":
-      destination.x--;
+      destination.y--;
       break;
     case "E":
-      destination.y++;
-      break;
-    case "S":
       destination.x++;
       break;
+    case "S":
+      destination.y++;
+      break;
     case "W":
-      destination.y--;
+      destination.x--;
       break;
   }
   repositionRover(map, rover, destination);
@@ -224,16 +224,16 @@ function moveBackwards(rover, map) {
   };
   switch (rover.direction) {
     case "N":
-      destination.x++;
+      destination.y++;
       break;
     case "E":
-      destination.y--;
-      break;
-    case "S":
       destination.x--;
       break;
+    case "S":
+      destination.y--;
+      break;
     case "W":
-      destination.y++;
+      destination.x++;
       break;
   }
   repositionRover(map, rover, destination);
@@ -424,15 +424,15 @@ const marsRoverGamma = {
 const roverOrders = [
   {
     rover: marsRoverAlpha,
-    commands: "rfffffrffbff"
+    commands: "lf"
   },
   {
     rover: marsRoverBeta,
-    commands: "fffrfffflbflfrff"
+    commands: ""
   },
   {
     rover: marsRoverGamma,
-    commands: "rfflfffrffffbbblbb"
+    commands: ""
   }
 ];
 
